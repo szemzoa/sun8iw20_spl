@@ -1,0 +1,33 @@
+#!/usr/bin/python3
+# SPDX-License-Identifier: GPL-2.0+
+
+import sys
+
+from struct import Struct
+
+CHECKSUM_OFFSET = 0x0c
+LENGTH_OFFSET   = 0x10
+
+BLOCK_SIZE      = 0x4000
+STAMP_VALUE     = 0x5f0a6C39
+
+def pad_to(data, boundary):
+    excess = len(data) % boundary
+    if excess:
+        data += b'\0' * (boundary - excess)
+
+def main(args):
+    u32 = Struct('<I')
+    with open(args[0], 'rb') as file_in, open(args[1], 'wb') as file_out:
+        image = bytearray(file_in.read())
+        pad_to(image, BLOCK_SIZE)
+        u32.pack_into(image, CHECKSUM_OFFSET, STAMP_VALUE)
+        u32.pack_into(image, LENGTH_OFFSET, len(image))
+        checksum = 0
+        for word in u32.iter_unpack(image):
+            checksum += word[0]
+        u32.pack_into(image, CHECKSUM_OFFSET, checksum % 2**32)
+        file_out.write(image)
+
+if __name__ == '__main__':
+    main(sys.argv[1:])

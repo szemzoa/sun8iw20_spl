@@ -1,0 +1,13 @@
+You can use any arm32 ELF/GNU/musl toolchain.
+
+1.build mmc
+make CROSS_COMPILE=arm-none-eabi- p=sun8iw20p1 mmc
+
+2.build nand
+make CROSS_COMPILE=arm-none-eabi- p=sun8iw20p1 nand
+
+3.build spinor
+make CROSS_COMPILE=arm-none-eabi- p=sun8iw20p1 spinor
+
+4.build fes
+make CROSS_COMPILE=arm-none-eabi- p=sun8iw20p1 fes
